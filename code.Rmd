@@ -14,7 +14,7 @@ library(reshape2)
 library(forcats)
 data<-read.csv('C:/Users/Lenovo/Desktop/COVID-19.csv')
 data<-melt(data,id.vars = 'day',
-            variable.name = "地区",value.name="num") 
+            variable.name = "地区",value.name = "num") 
 data$day<-fct_inorder(data$day)
 ggplot(data = data, mapping = aes(x = day, y = num, colour = 地区,group = 地区 )) +
        geom_line(size = 0.5) +
@@ -23,4 +23,26 @@ ggplot(data = data, mapping = aes(x = day, y = num, colour = 地区,group = 地�
        theme(axis.text.x = element_text(angle = 60, hjust = 0.5, vjust =0.5 ,size = 8))
 
 ```
+
+##
+ggplot画深圳市各区截止3月13日累计确诊人数环形图
+
+```{r ,echo=TRUE}
+library(ggplot2)
+data<-read.csv('C:/Users/Lenovo/Desktop/COVID_19.csv')
+data$proportion<-round(data$count/sum(data$count),3)
+data$ymax<-cumsum(data$proportion) 
+data$ymin<-c(0,head(data$ymax,n = -1))  
+data$labelPosition<-(data$ymax + data$ymin)/2
+data$label<-paste0(data$area,"\n",data$proportion)
+ggplot(data)+
+      geom_rect(aes(ymax = ymax,ymin = ymin,xmax = 0,xmin = 1,fill = area))+
+      xlim(-1,1)+
+      coord_polar(theta = "y")+
+      theme_void()+
+      geom_label(x = 0.7,y = data$labelPosition,label = data$label,size = 3)+
+      labs(title = "深圳各地累计确诊人数占比:",fill = '地区')+
+      theme(legend.position = "right")
+```
+
 
