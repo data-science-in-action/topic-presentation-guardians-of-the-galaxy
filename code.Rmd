@@ -1,0 +1,27 @@
+---
+title: "code"
+author: "zm"
+date: "2020/4/1"
+output: html_document
+---
+
+## 
+ggplot画深圳市各区确诊人数变化折线图
+
+```{r ,echo=TRUE}
+library(ggplot2)
+library(reshape2)
+library(forcats)
+data<-read.csv('C:/Users/Lenovo/Desktop/COVID-19.csv')
+data<-melt(data,id.vars = 'day',
+            variable.name = "area",value.name="num") 
+data$day<-fct_inorder(data$day)
+ggplot(data = data, 
+       mapping = aes(x = day, y = num, colour = area,group =area )) +
+       geom_line(size = 0.5) +
+       geom_point(size = 1.5) +
+       labs(title = "深圳各地累计确诊人数变化:",subtitle = "单位：人") +
+       theme(axis.text.x = element_text(angle = 60, hjust = 0.5, vjust = 0.5 ,size = 8))
+
+```
+
