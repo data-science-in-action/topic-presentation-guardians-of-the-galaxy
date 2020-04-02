@@ -1,0 +1,478 @@
+---
+title: "深圳市COVID-19数据分析与可视化研究"
+author: "Guardians of the Galaxy"
+date: "2020/4/3"
+output:
+  slidy_presentation: default
+  ioslides_presentation: default
+mathjax: local
+pagemargins: 2.5
+fontsize: 12
+---
+## 演讲内容
+
+### 1、研究内容
+
+&emsp;研究主题、研究思路、数据来源、研究方法、参考文献
+
+### 2、前期成果
+
+&emsp;1.对感染者性别、确诊人数等进行描述性统计分析
+
+&emsp;2.运用Logistic回归模型探索影响患者病情轻重的因素
+
+### 3、可视化方法1
+
+&emsp;1、绘制深圳市各区累计确诊人数占比环形图
+
+&emsp;2、深圳市各区累计确诊人数时序图
+
+### 4、可视化方法2
+
+&emsp;绘制深圳市累计确诊人数空间分布动态图（疫情地图）
+
+----
+
+## 1. 研究内容
+
+### 1.1 研究主题
+
+&emsp;&emsp;纵观当下，COVID—19已蔓延到全球200个国家和地区，已成为一起严重的全球性突发公共卫生事件，早日抑制疫情发展、恢复社会活力是全球人民的共同愿望。而深圳市作为全国性经济中心城市和国际化城市，也是我国拥有口岸数量和出入境人员最多的城市，外来人员流动频繁。因此，研究深圳市COVID-19时空传播路径、特征及规律具有深刻意义。
+
+&emsp;&emsp;本项目拟利用深圳市卫生健康局公开的418例新型冠状病毒肺炎病例流行病学调查数据，综合应用空间计量统计分析方法、数学统计方法、地理信息技术、可视化技术等，全面探讨深圳市COVID-19流行病学特征和传播的时空规律,为之后研究疫情预警机制提供基础，也为研究国内外疫情传播规律提供参考.
+
+----
+
+## 1.2研究思路
+
+### 1.2.1分析深圳市COVID-19的流行病学特征
+
+&emsp;&emsp;了解深圳市COVID-19的基本流行病学特征，是深入剖析深圳市疫情时空传播特征的前提。本项目拟从以下几个方面展开分析：
+
+&emsp;1、描述性统计分析
+
+&emsp;&emsp;本项目将运用典型相关分析、列联分析、二元logistic回归等方法初步分析深圳市患者的年龄、性别、是否有湖北直接接触史等人口统计特征与感染特征的关系。
+
+&emsp;2、时序特征分析
+
+&emsp;&emsp;通过绘制1月19日到3月5日的深圳市整体每日新增确诊人数变化时序图、深圳市各行政区每日新增人数时序变化图，分析深圳市疫情的整体发展态势（整体增幅、拐点、最低点）、阶段性特征及重点区域感染特征。
+
+&emsp;3、空间分布特征
+
+&emsp;&emsp;通过绘制深圳市累计确诊人数空间分布动态图，分析深圳市患者分布的整体特征、重点区域特征、时间变化特征等，初步探析深圳市疫情分布态势。
+
+----
+
+### 1.2.2 分析深圳市疫情时空传播规律
+
+&emsp;&emsp;由于传染病在空间上的传播扩散与人口分布、环境及其他各类空间因子息息相关。感染者之间非完全独立,而是具备空间依赖性。因此需要运用空间统计分析方法探索感染者的空间关联关系。本项目将运用R、GeoDa等软件，利用Moran’s I统计指数和LISA统计指数测度疫情全局空间自相关和局部空间自相关，对深圳市COVID-19的空间传播风险进行定量分析。
+
+&emsp; 1、 全局空间自相关
+
+&emsp;&emsp;全局空间自相关是从宏观的角度研究观测值在空间上的分布特征。由于性别、年龄、发病时间及是否有武汉直接接触史、累计确诊人数等都会对疫情的空间传播模式产生影响。本文将运用全局Moran'I来分析以上所有因素的的空间自相关性，从而分析深圳市疫情分布的总体时空特征。
+
+&emsp; 2、 局部空间自相关
+
+&emsp;&emsp;全局空间自相关是分析整个研究区域累计确诊人数、性别、年龄等各指标自身的相似程度，但是不能得知具体地区的空间分布模式。而局部空间自相关可以描述具体空间单元与其邻近单元观测值的相似程度。因此我们运用采用LISA指数来分析深圳市疫情的空间传播风险及其时空演化特征。
+
+&emsp;&emsp;LISA 指数能够定量反映出空间上的4种聚类特征，分别是高-高聚集、低-低聚集、高-低聚集、低-高聚集。通过绘制累计确诊人数、性别、年龄等LISA聚集图，分析疫情传播的感染区域特征，思考形成疫情高风险区域的原因。并根据发病时间的LISA聚集图,分析不同时期疫情传播的空间特征，探索疫情传播时空规律。
+
+----
+
+## 1.3 数据来源
+
+&emsp;&emsp;本项目使用的数据来自深圳市政府数据开放平台中“疫情数据开放”专题下的1月19日到3月5日的9个疫情数据集。数据集由深圳市卫生健康委员会和市规划和自然资源局提供。
+
+&emsp;&emsp;数据包含深圳市418例COVID-19感染者基本信息，包括每位感染者的年龄、性别、居住地、与其他病例关系、行程、发病时间、入院时间、染病原因、病况等信息。我们根据研究需要对部分数据进行预处理，如将具体染病原因做有无湖北直接接触史划分、将居住地、病况等设置为虚拟变量等。
+
+----
+
+## 1.4 研究方法
+### 1.4.1空间计量分析方法。
+
+&emsp;&emsp;利用空间分析软件GeoDA进行基于Moran’sI和LISA统计指数的疫情传播风险分析。
+
+### 1.4.2可视化分析方法
+
+&emsp;&emsp;运用ggplot2、ggmap、maps、leaflet等绘制深圳市患者年龄—性别分布金字塔图、每日新增确诊人数变化时序图、累计确诊人数空间分布动态图等。
+  
+
+----
+
+## 1.5 参考文献
+
+[1]曹志冬,曾大军,郑晓龙,王全意,王飞跃,王劲峰,王小莉.北京市SARS流行的特征与时空传播规律[J].中国科学:地球科学,2010,40(06):776-788.
+
+[2]刘郑倩,叶玉瑶,张虹鸥,郭洪旭,杨骥,王长建.珠海市新型冠状病毒肺炎聚集发生的时空特征及传播路径[J/OL].热带地理:1-13[2020-04-01].https://doi.org/10.13284/j.cnki.rddl.003228.
+
+[3]苏理云,郭雯.中国各省新型冠状病毒肺炎累计确诊人数的空间聚集及时空格局演变分析[J/OL].重庆理工大学学报(自然科学):1-11[2020-04-01].http://kns.cnki.net/kcms/detail/50.1205.t.20200325.1548.002.html.
+
+[4]王宣焯,廖聪慧,李志慧,胡欢,程晓敏,李芊璘,陆家海.广东省新型冠状病毒肺炎早期流行与时空分布情况初步分析[J/OL].热带医学杂志,2020(03):1-8[2020-04-01].http://kns.cnki.net/kcms/detail/44.1503.R.20200213.0806.002.html.
+
+[5]张君涵,袁宗祥,黄颉刚,梁冰玉,刘洁,廖艳研,韦吴迪,潘沛江,梁浩,叶力.福建省新型冠状病毒肺炎流行特征与网络关注点初步分析[J].广西医学,2020,42(03):325-330.
+
+[6]曹志冬,曾大军,王全意,王小莉,张奕,邓瑛,郑晓龙,王飞跃.北京市甲型H1N1早期流行的特征与时空演变模式[J].地理学报,2010,65(03):361-368.
+
+[7]胡碧松,龚建华,周洁萍,孙麇,杨荔阳,夏宇.传播输入输出流的时空特征分析——以北京SARS流行为例[J].中国科学:地球科学,2013,43(09):1499-1517.
+
+[8]徐冰. 基于贝叶斯网络的传染病时空预警模型研究[D].长安大学,2015.
+
+[9]许小可,文成,张光耀,孙皓宸,刘波,王贤文.新冠肺炎爆发前期武汉外流人口的地理去向分布及影响[J/OL].电子科技大学学报:1-6[2020-04-01].http://kns.cnki.net/kcms/detail/51.1207.T.20200213.2002.002.html.
+
+[10]王书霞,王晓峰,常月明.基于Moran'sI和LISA的人口与经济系统协调性研究[J].统计与决策,2014(06):90-93.
+
+----
+
+## 2.深圳市新冠肺炎感染特征的初步分析
+
+
+
+&ensp; &ensp;&ensp;&ensp;新型冠状病毒的蔓延与扩散深深牵动着各界爱国人士的心。为了解新型冠状病毒的感染特征，预防和减小人民群众被感染的风险，我们对深圳市的新冠肺炎感染特征做了初步分析。关于疫情感染特征的初步分析主要使用的是深圳市“新型肺炎”-每日新增确诊病例个案详情数据表。
+    
+&ensp; &ensp;&ensp;&ensp;初步分析主要分为以下两个部分。
+    
+    
+    
+    
+    
+| |研究内容|
+|:--|:--|
+|描述性分析   |对患者的人口特征，深圳市感染趋势，确诊及出院人数进行分析|
+|二元Logistic回归   |探寻影响患者病症轻重的关键因素|
+
+----
+
+## 涉及的主要变量如下：
+     
+     
+|变量组|变量|变量值|
+|:-:|:-:|:-|
+|人口统计特征|$X_1$年龄|数值型连续变量|
+|            |$X_2$性别|0-男|
+|            |         |1-女|
+|            |$X_3$有无湖北直接接触史（感染源）|0-无湖北直接接触史|
+|            |         |1-有湖北直接接触史|
+|            |$X_4$居住地是否为武汉|0-否|
+|            |                     |1-是|
+|发病状况    |$X_5$发病时间段|0-初代感染（1月10日之前）|
+|            |               |1-次代感染（1月10日之后）|      
+|            |$Y_1$病况|0-轻症|
+|            |         |1-重症|
+
+----
+
+## 2.1深圳市确诊病例基本情况分析
+
+&ensp; &ensp;&ensp;&ensp;这部分从确诊病例性别、年龄、确诊趋势对深圳市疫情传播情况进行分析。
+
+### 2.1.1感染者性别分布情况
+
+```{r,echo = F }
+data <- read.csv("gender.csv",header = T )
+data$gender <- factor(data$gender,levels = data$gender)
+library(ggplot2)
+mylabel<-paste(data[,2],"%")
+mylabel<-rev(mylabel)
+percent<-rev(data$percentage)
+
+p<-ggplot(data,aes(x="",y=percentage,fill=gender)) +
+  geom_bar(stat = "identity",color="white") + 
+  scale_fill_manual(values = c("#FFA533","#2BCF76","#4874EC","#A372E6")) +
+  coord_polar(theta = "y") +
+  theme(axis.text.x = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank()) +
+  geom_text(aes(y= cumsum(percent)-percent/2, x= 1),label=mylabel)
+p
+
+```
+
+&ensp; &ensp;&ensp;&ensp;截止3月5日，深圳市累计确诊病例共达418人，其中，男性感染者有219名，共占比52%；女性受访者有199名，占比48%，可以看出此次疫情感染在性别上并无明显差异。
+
+----
+
+## 2.1.2感染者年龄分布情况
+```{r,echo = F }
+data1 <- read.csv("age.csv",header =T )
+library(ggplot2)
+p<-ggplot(data1,aes(x=age))+geom_histogram(breaks=seq(0,89,4))+xlim(0,89)
+p
+```
+
+&ensp; &ensp;&ensp;&ensp;由上图可知在本次疫情中，深圳市确诊病例在30-70年龄段人数最多，患者年龄最大的为86岁，最小的为1岁，平均年龄为45岁，整体分布呈现轻微左偏，较平缓。
+
+----
+
+## 2.1.3深圳市感染趋势情况
+
+
+```{r,echo = F,message=FALSE}
+h <- read.table(file="time1.csv",sep = ",",header = T)
+library(zoo)
+library(xts)
+hh <- xts(h$number,as.Date(h$time, format='%Y/%m/%d'))
+win.graph(width = 9.5,height = 5.5,pointsize = 5)
+p<-plot(hh,type='l',main='')
+p
+```
+
+
+&ensp; &ensp;&ensp;&ensp;<font size=6>自1月19日起，深圳市陆续出现确诊感染病例，疫情在1月27日至2月8日达到了爆发期。2月8日后，感染人数增速放缓，深圳市疫情出现拐点。
+
+----
+
+## 确诊人数与出院人数
+```{r,echo = F }
+ch <- read.table(file="chuyuan.csv",sep = ",",header = T)
+library(zoo)
+library(xts)
+options(warn=-1)
+qz<-xts(ch$xzqz, as.Date(ch$time, format='%Y/%m/%d'))
+cy<-xts(ch$xzcy, as.Date(ch$time, format='%Y/%m/%d'))
+win.graph(width = 9.5,height = 5.5,pointsize = 5)
+plot(qz,type='l',main ='',col="blue")
+lines(cy,type='l',main='',col="red")
+```
+
+
+&ensp; &ensp;&ensp;&ensp;2月3日起，深圳市新增确诊人数逐日减少。2月1日起，新增出院人数逐日增加；自2月26日起，深圳市疫情已得到基本控制，新增确诊人数逐渐趋于0。
+
+
+----
+
+## 2.2二元Logistic回归
+
+&ensp; &ensp;&ensp;&ensp;这一部分通过二元Logistic回归，选择确诊病例的年龄，性别，感染源，居住地是否为湖北省，发病时段这5个指标作为自变量，以发病者病况轻重（轻症患者，重症患者）为因变量，探寻影响患者病症轻重的关键因素。
+
+### 2.2.1 初始变量的选择
+
+&ensp; &ensp;&ensp;&ensp;我们选取确诊病例的年龄、性别、感染源、居住地以及发病时段作为回归模型的初始自变量。给各变量分别命名，自变量：年龄$x_1$，性别$x_2$（0：男，1：女）、感染源$x_3$（0：有湖北接触史，1：无湖北接触史）、居住地是否为湖北省$x_4$（0：否，1：是）、发病时段$x_5$（0：初代感染，1：次代感染），因变量:感染者病况$Y_1$（0：轻症，1：重症）。
+
+----
+
+## 2.2.2回归方程的构建
+```{r,echo = F,message=F }
+Data <- read.csv("logistic.csv")
+library(AER)
+glm <- glm(formula = condition ~ age+gender+wuhan+home+time,family = binomial(),data = Data)
+summary(glm)
+```
+
+
+&ensp; &ensp;&ensp;&ensp;可以看出age（年龄）和time（发病时段）是显著的，通过模型验证的，其他变量不合格，我们需要丢弃。
+
+----
+
+## 修改后的回归方程
+```{r,echo = F }
+Data <- read.csv("logistic.csv")
+library(AER)
+reduced <- glm(formula = condition ~ age+time,family = binomial(),data = Data)
+summary(reduced)
+
+```
+
+&ensp; &ensp;&ensp;&ensp;当剔除了3个不显著的变量之后，剩余两个自变量的p值均小于显著性水平0.001，此时结果有意义，得到的模型如下：
+
+$$Ln(\frac{p}{1-p})=-6.04+0.17age-3.93time$$
+
+----
+
+## 2.2.3回归模型的意义
+
+$$Ln(\frac{p}{1-p})=-6.04+0.17age-3.93time$$
+
+&ensp; &ensp;&ensp;&ensp;对该模型的说明解释：
+  
+  （1）$x_1$（年龄）：在发病时段（$x_5$）不变的情况下，年龄（$x_1$）每提高一个单位，患者为重症的可能性会增加。这表明年长者会更容易感染，原因可能是年长者免疫力低下，被感染的几率增加，并且本身有一些疾病时，患病后各项生理机能都会急剧下降，表现为重度症状。
+  
+  （2）$x_5$（发病时段）：在年龄（$x_1$）不变的情况下，早期感染的病例表现为重症的可能性更高。在疫情爆发早期，一是人们对病因不明，多数患者及医生仅当做普通肺炎治疗，没有及时有效的治疗手段，错过了最佳治疗时机，导致了病情的加重，二是初期医疗救治条件不能满足短期大量危重病人的需求，导致病情不能得到有效控制急剧恶化。
+  
+----  
+
+# 3.可视化方法1
+
+&emsp;&emsp;这部分通过绘制1月30日到3月5日的深圳市整体每日累计确诊人数变化时序图、深圳市各行政区截止3月5日累计确诊环形图，分析深圳市疫情的整体发展态势（整体增幅、拐点、最低点）及分布状况。
+
+### 3.1 利用ggplot画深圳市各区确诊人数变化折线图
+
+```{r ,echo=TRUE}
+library(ggplot2)
+library(reshape2)
+library(forcats)
+data<-read.csv('COVID-19.csv')
+data<-melt(data,id.vars = 'day',
+            variable.name = "area",value.name = "num") 
+data$day<-fct_inorder(data$day)
+ggplot(data = data, mapping = aes(x = day, y = num, colour = area,group = area )) +
+       geom_line(size = 0.5) +
+       geom_point(size = 1.5) +
+       labs(title = "深圳各地累计确诊人数变化:",subtitle = "单位：人",x = '时间',y = '人数') +
+       theme(axis.text.x = element_text(angle = 60, hjust = 0.5, vjust =0.5 ,size = 8))
+
+```
+
+
+&emsp;&emsp;通过观察深圳市各区截至3月5日累计确诊人数变化折线图，可以看到，从1月30日到2月15日，各区累计确诊人数整体处于上升的趋势，从到2月15日开始，深圳各区的累计确诊人数变化已经基本稳定，说明疫情控制取得了一定的效果。
+
+----
+
+## 3.2 利用ggplot画深圳市各区截止3月5日累计确诊人数环形图
+
+```{r ,echo=TRUE}
+library(ggplot2)
+data<-read.csv('COVID_19.csv')
+data$proportion<-round(data$count/sum(data$count),3)
+data$ymax<-cumsum(data$proportion) 
+data$ymin<-c(0,head(data$ymax,n = -1))  
+data$labelPosition<-(data$ymax + data$ymin)/2
+data$label<-paste0(data$area,"\n",data$proportion)
+ggplot(data)+
+      geom_rect(aes(ymax = ymax,ymin = ymin,xmax = 0,xmin = 1,fill = area))+
+      xlim(-1,1)+
+      coord_polar(theta = "y")+
+      theme_void()+
+      geom_label(x = 0.7,y = data$labelPosition,label = data$label,size = 3)+
+      labs(title = "深圳各地累计确诊人数占比:",fill = '地区')+
+      theme(legend.position = "right")
+```
+
+&emsp;&emsp;通过深圳各区累计确诊人数占比环形图，可以很清楚地看到深圳南山区、福田区是确诊人数占比最大的区，分别占比0.221和0.208，这很可能与深圳这两个区的人流量大等因素有关系，而大棚区和盐田区占比最少，分别占0.015和0.005。
+
+
+----
+
+# 4.可视化方法2
+## 4.1基于深圳市各区累计确诊病例的疫情地图
+
+&emsp;&emsp;这部分主要介绍如何使用R语言实现疫情地图的可视化。疫情地图的可视化可以更加直观地反映疫情在不同地区的分布情况以及严重程度，我们在静态疫情地图的基础上，进一步绘制出可以反映疫情在时间、空间两个维度上传播的动态地图。
+
+### 4.1.1静态疫情地图绘制过程
+
+&emsp;&emsp; 1、加载所需程序包
+```{r,message=FALSE,eval=FALSE}
+library(jsonlite);library(rjson);library(RJSONIO)
+library(ggplot2);library(RColorBrewer);library(lubridate)
+library(plyr);library(dplyr);library(rgdal)
+```
+
+&emsp;&emsp; 2、读取数据，并挑选出3月5日的疫情数据
+```{r,message=FALSE,eval=FALSE}
+x<-readOGR("shenzhenDistrict.shp")
+shen_map<-fortify(x)
+shen_nCov =read.csv("data_confirm.csv")
+city_name=read.csv("city_name.csv")
+shen_nCov$time=ymd(shen_nCov$time)
+sh_nCov=shen_nCov[shen_nCov$time=="2020-3-5",]
+```
+&emsp;&emsp;3、使用cut函数对疫情数据分箱，增加分段列confirm，并保存为数据框totalconfirm。
+```{r,,message=FALSE,eval=FALSE}
+
+totalconfirm=data.frame(time=sh_nCov$time,id=sh_nCov$id,confirmnum=sh_nCov$confirm,
+                        confirm=cut(shen_nCov$confirm,breaks=c(1,10,20,50,80,100),
+                                    labels=c("=<10","10-19","20-49","50-79",">=80"),
+                                    order = TRUE,include.lowest = T,right = F))
+
+
+```
+&emsp;&emsp;4、将疫情数据与地理数据合并
+```{r,message=FALSE,eval=FALSE}
+df_sh<-merge.data.frame(shen_map,totalconfirm,by.shen_map="id",by.totalconfirm="id")
+```
+
+&emsp;&emsp;5、绘制3月5日的疫情地图
+```{r,message=FALSE,eval=FALSE}
+g=ggplot()+
+    geom_polygon(data=df_sh,aes(x=long,y=lat,group=group,
+                   fill=confirm),colour="black",size=0.25)+
+    geom_text(aes(x=jd,y=wd,label=city),data=city_name)+
+    labs(title="2019_nCoV 深圳市疫情地图",
+         subtitle="2020-3-5")+
+         scale_fill_manual(values = brewer.pal(5,"Reds"))
+print(g)
+```
+
+```{r,message=FALSE, echo=FALSE}
+knitr::include_graphics("2020-3-5.png",dpi=NA)
+```
+
+----
+
+## 4.1.2动态疫情地图绘制过程
+
+&emsp;&emsp;1、加载所需程序包
+```{r,message=FALSE,eval=FALSE}
+library(jsonlite);library(rjson);library(RJSONIO)
+library(ggplot2);library(RColorBrewer);library(lubridate)
+library(plyr);library(dplyr);library(rgdal)
+```
+
+&emsp;&emsp;2、读取数据
+```{r,message=FALSE,eval=FALSE}
+x<-readOGR("shenzhenDistrict.shp")
+shen_map<-fortify(x)
+shen_nCov =read.csv("data_confirm.csv")
+city_name=read.csv("city_name.csv")
+```
+
+&emsp;&emsp;3、对输出数据进行简单的处理,格式选择我们需要的累计确诊人数，并对列名进行更改,并使用cut函数对疫情数据分箱。
+```{r,message=FALSE,eval=FALSE}
+shen_nCov$time=ymd(shen_nCov$time)
+totalconfirm=data.frame(time=shen_nCov$time,id=shen_nCov$id,confirmnum=shen_nCov$confirm,
+                        confirm=cut(shen_nCov$confirm,breaks=c(1,10,20,50,80,100),
+                                    labels=c("=<10","10-19","20-49","50-79",">=80"),
+                                    order = TRUE,include.lowest = T,right = F))
+```
+
+&emsp;&emsp;4、制作时间序列,根据疫情数据，创建时间序列，用于后续循环绘图。
+```{r,message=FALSE,eval=FALSE}
+startTime <- ymd("2020-1-30")
+endTime <- ymd("2020-3-5")
+timeLength <- interval(startTime, endTime) %>% time_length("day")
+mytime <- startTime + ddays(0:timeLength)
+```
+
+&emsp;&emsp;5、循环绘图,按照时间序列循环绘制静态图片，保存为.gif格式的动图。
+```{r,message=FALSE,eval=FALSE}
+library(animation)
+saveGIF({
+  for (i in 1:length(mytime)) {
+    data_time=subset(totalconfirm,time==mytime[i])
+    df_shen<-merge.data.frame(shen_map,data_time,by.shen_map="id",by.data_time="id")
+    p=ggplot()+
+      geom_polygon(data=df_shen,aes(x=long,y=lat,group=group,
+                                    fill=confirm), colour="black",size=0.25)+
+      geom_text(aes(x=jd,y=wd,label=city),data=city_name)+
+      labs(title="2019_nCoV 深圳市疫情地图",
+           subtitle=mytime[i])+
+      scale_fill_manual(values = brewer.pal(5,"Reds"))
+  print(p)
+ }
+},movie.name="深圳疫情可视化动态地图.gif",path = "D:/",width = 20, height = 20, units = "cm")
+
+```
+
+```{r,message=FALSE, echo=FALSE}
+knitr::include_graphics("深圳疫情可视化动态地图.gif",dpi=NA)
+```
+
+----
+
+### 4.3结论
+&emsp;&emsp;通过观察深圳市动态疫情地图，我们可以发现在1月30日至2月8日之间，深圳市各行政区疫情患者日增速较快,自2月20日后，各区累计确诊数变动不大，增速明显放缓，说明疫情得到了有效控制。
+
+&emsp;&emsp;此外，从时间空间传播角度，还可以发现疫情有以南山区、福田区为中心随时间向周围行政区扩散的趋势，并且深圳市疫情呈现明显两极分化的趋势，西部各区为重灾区，而东部三区累计确诊病例数均停留在个位数上。
+
+&emsp;&emsp;结合深圳市各区经济发展等因素进行粗略分析，发现其疫情与各区人口密度，交通便利度、区位功能重要性、地理环境等密切相关，比如东部三区以山地为主，经济欠发达，而西部区域分别建有地铁线、高铁站、机场等大型交通枢纽，还包括数家世界500强企业,人口流量大，活动范围广，因此，疫情在东西部的传播范围呈现出显著差异。
+
+&emsp;&emsp;在初步分析的过程中，疫情地图可视化可以帮助我们拓展研究思路，挖掘更多隐藏信息，为深入分析疫情的时空传播模式和特征提供方向。
+
+
+
+
+
+
+
+
+
+
