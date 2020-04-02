@@ -122,6 +122,167 @@ fontsize: 12
 
 # 2.前期成果
 
+## 2、深圳市新冠肺炎感染特征的初步分析
+
+
+&ensp; &ensp;&ensp;&ensp;<font size=6>新型冠状病毒的蔓延与扩散深深牵动着各界爱国人士的心。为了解新型冠状病毒的感染特征，预防和减小人民群众被感染的风险，我们对深圳市的新冠肺炎感染特征做了初步分析。关于疫情感染特征的初步分析主要使用的是深圳市“新型肺炎”-每日新增确诊病例个案详情数据表。
+    
+&ensp; &ensp;&ensp;&ensp;初步分析主要分为以下两个部分。
+    
+    
+    
+    
+    
+| |研究内容|
+|:--|:--|
+|描述性分析   |对患者的人口特征，深圳市感染趋势，确诊及出院人数进行分析|
+|二元Logistic回归   |探寻影响患者病症轻重的关键因素|
+
+
+## 涉及的主要变量如下：
+     
+     
+|变量组|变量|变量值|
+|:-:|:-:|:-|
+|人口统计特征|$X_1$年龄|数值型连续变量|
+|            |$X_2$性别|0-男|
+|            |         |1-女|
+|            |$X_3$有无湖北直接接触史（感染源）|0-无湖北直接接触史|
+|            |         |1-有湖北直接接触史|
+|            |$X_4$居住地是否为武汉|0-否|
+|            |                     |1-是|
+|发病状况    |$X_5$发病时间段|0-初代感染（1月10日之前）|
+|            |               |1-次代感染（1月10日之后）|      
+|            |$Y_1$病况|0-轻症|
+|            |         |1-重症|</font>
+
+
+## 2.1深圳市确诊病例基本情况分析
+
+&ensp; &ensp;&ensp;&ensp;<font size=6>这部分从确诊病例性别、年龄、确诊趋势对深圳市疫情传播情况进行分析。</font>
+
+#### 2.1.1感染者性别分布情况
+
+```{r,echo = F }
+setwd("D:/datagender")
+data <- read.csv("gender.csv",header = T )
+data$gender <- factor(data$gender,levels = data$gender)
+library(ggplot2)
+mylabel<-paste(data[,2],"%")
+mylabel<-rev(mylabel)
+percent<-rev(data$percentage)
+
+p<-ggplot(data,aes(x="",y=percentage,fill=gender)) +
+  geom_bar(stat = "identity",color="white") + 
+  scale_fill_manual(values = c("#FFA533","#2BCF76","#4874EC","#A372E6")) +
+  coord_polar(theta = "y") +
+  theme(axis.text.x = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank()) +
+  geom_text(aes(y= cumsum(percent)-percent/2, x= 1),label=mylabel)
+p
+
+```
+
+&ensp; &ensp;&ensp;&ensp;<font size=6>截止3月5日，深圳市累计确诊病例共达418人，其中，男性感染者有219名，共占比52%；女性受访者有199名，占比48%，可以看出此次疫情感染在性别上并无明显差异。</font>
+
+
+
+## 2.1.2感染者年龄分布情况
+```{r,echo = F }
+setwd("D:/datagender")
+data1 <- read.csv("age.csv",header =T )
+library(ggplot2)
+p<-ggplot(data1,aes(x=age))+geom_histogram(breaks=seq(0,89,4))+xlim(0,89)
+p
+```
+
+&ensp; &ensp;&ensp;&ensp;<font size=6>由上图可知在本次疫情中，深圳市确诊病例在30-70年龄段人数最多，患者年龄最大的为86岁，最小的为1岁，平均年龄为45岁，整体分布呈现轻微左偏，较平缓。</font>
+
+
+## 2.1.3深圳市感染趋势情况
+
+
+```{r,echo = F }
+setwd("D:/datagender")
+h <- read.table(file="D:/datagender/time1.csv",sep = ",",header = T)
+library(zoo)
+library(xts)
+hh <- xts(h$number,as.Date(h$time, format='%Y/%m/%d'))
+win.graph(width = 9.5,height = 5.5,pointsize = 5)
+p<-plot(hh,type='l',main='')
+p
+```
+
+
+&ensp; &ensp;&ensp;&ensp;<font size=6>自1月19日起，深圳市陆续出现确诊感染病例，疫情在1月27日至2月8日达到了爆发期。2月8日后，感染人数增速放缓，深圳市疫情出现拐点。</font>
+
+## 确诊人数与出院人数
+```{r,echo = F }
+setwd("D:/datagender")
+ch <- read.table(file="D:/datagender/chuyuan.csv",sep = ",",header = T)
+library(zoo)
+library(xts)
+options(warn=-1)
+qz<-xts(ch$xzqz, as.Date(ch$time, format='%Y/%m/%d'))
+cy<-xts(ch$xzcy, as.Date(ch$time, format='%Y/%m/%d'))
+win.graph(width = 9.5,height = 5.5,pointsize = 5)
+plot(qz,type='l',main ='',col="blue")
+lines(cy,type='l',main='',col="red")
+```
+
+
+&ensp; &ensp;&ensp;&ensp;<font size=6>2月3日起，深圳市新增确诊人数逐日减少。2月1日起，新增出院人数逐日增加；自2月26日起，深圳市疫情已得到基本控制，新增确诊人数逐渐趋于0。</font>
+
+
+
+## 2.2二元Logistic回归
+
+&ensp; &ensp;&ensp;&ensp;<font size=6>这一部分通过二元Logistic回归，选择确诊病例的年龄，性别，感染源，居住地是否为湖北省，发病时段这5个指标作为自变量，以发病者病况轻重（轻症患者，重症患者）为因变量，探寻影响患者病症轻重的关键因素。</font>
+
+#### 2.2.1 初始变量的选择
+
+&ensp; &ensp;&ensp;&ensp;<font size=6>我们选取确诊病例的年龄、性别、感染源、居住地以及发病时段作为回归模型的初始自变量。给各变量分别命名，自变量：年龄$x_1$，性别$x_2$（0：男，1：女）、感染源$x_3$（0：有湖北接触史，1：无湖北接触史）、居住地是否为湖北省$x_4$（0：否，1：是）、发病时段$x_5$（0：初代感染，1：次代感染），因变量:感染者病况$Y_1$（0：轻症，1：重症）。</font>
+
+## 2.2.2回归方程的构建
+```{r,echo = F }
+setwd("D:/datagender")
+Data <- read.csv("logistic.csv")
+library(AER)
+glm <- glm(formula = condition ~ age+gender+wuhan+home+time,family = binomial(),data = Data)
+summary(glm)
+```
+
+
+&ensp; &ensp;&ensp;&ensp;<font size=6>可以看出age（年龄）和time（发病时段）是显著的，通过模型验证的，其他变量不合格，我们需要丢弃。</font>
+
+## 修改后的回归方程
+```{r,echo = F }
+setwd("D:/datagender")
+Data <- read.csv("logistic.csv")
+library(AER)
+reduced <- glm(formula = condition ~ age+time,family = binomial(),data = Data)
+summary(reduced)
+
+```
+
+&ensp; &ensp;&ensp;&ensp;<font size=6>当剔除了3个不显著的变量之后，剩余两个自变量的p值均小于显著性水平0.001，此时结果有意义，得到的模型如下：</font>
+
+$$Ln(\frac{p}{1-p})=-6.04+0.17age-3.93time$$
+
+
+## 2.2.3回归模型的意义
+
+$$Ln(\frac{p}{1-p})=-6.04+0.17age-3.93time$$
+
+&ensp; &ensp;&ensp;&ensp;<font size=6>对该模型的说明解释：
+  
+  （1）$x_1$（年龄）：在发病时段（$x_5$）不变的情况下，年龄（$x_1$）每提高一个单位，患者为重症的可能性会增加。这表明年长者会更容易感染，原因可能是年长者免疫力低下，被感染的几率增加，并且本身有一些疾病时，患病后各项生理机能都会急剧下降，表现为重度症状。
+  
+  （2）$x_5$（发病时段）：在年龄（$x_1$）不变的情况下，早期感染的病例表现为重症的可能性更高。在疫情爆发早期，一是人们对病因不明，多数患者及医生仅当做普通肺炎治疗，没有及时有效的治疗手段，错过了最佳治疗时机，导致了病情的加重，二是初期医疗救治条件不能满足短期大量危重病人的需求，导致病情不能得到有效控制急剧恶化。</font>
+  
+    
+
 # 3.可视化方法1
 
 这部分通过绘制1月30日到3月5日的深圳市整体每日累计确诊人数变化时序图、深圳市各行政区截止3月5日累计确诊环形图，分析深圳市疫情的整体发展态势（整体增幅、拐点、最低点）及分布状况。
