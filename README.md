@@ -1,5 +1,4 @@
-# topic-presentation-guardians-of-the-galaxy
-## 工作计划如下：
+# topic presentation.Rmd在topic.Rmd+data文件夹下
 ### 一、确定研究对象、研究主题、研究方法及数据获取
 ### 二、确定讨论时间
 #### （一）3月24日 第一次讨论——细化主题研究内容。
