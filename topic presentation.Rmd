@@ -43,8 +43,8 @@ output: slidy_presentation
 
 &emsp;&emsp;本项目拟利用深圳市卫生健康局公开的418例新型冠状病毒肺炎病例流行病学调查数据，综合应用空间计量统计分析方法、数学统计方法、地理信息技术、可视化技术等，全面探讨深圳市COVID-19流行病学特征和传播的时空规律,为之后研究疫情预警机制提供基础，也为研究国内外疫情传播规律提供参考.
 
-
-# 1.2研究思路
+---
+## 1.2研究思路
 
 ### 1.2.1分析深圳市COVID-19的流行病学特征
 
@@ -94,130 +94,7 @@ output: slidy_presentation
 
 &emsp;&emsp;运用ggplot2、ggmap、maps、leaflet等绘制深圳市患者年龄—性别分布金字塔图、每日新增确诊人数变化时序图、累计确诊人数空间分布动态图等。
   
-#### 1.基于深圳市各区累计确诊病例的疫情地图
 
-这部分主要介绍如何使用R语言实现疫情地图的可视化。疫情地图的可视化可以更加直观地反映疫情在不同地区的分布情况以及严重程度，我们在静态疫情地图的基础上，进一步绘制出可以反映疫情在时间、空间两个维度上传播的动态地图动态疫情地图。
-
-#### 1.1静态疫情地图绘制过程
-
-#### (1)加载所需程序包
-```{r,message=FALSE,eval=FALSE}
-library(jsonlite);library(rjson);library(RJSONIO)
-library(ggplot2);library(RColorBrewer);library(lubridate)
-library(plyr);library(dplyr);library(rgdal)
-```
-
-#### (2)读取数据，并挑选出3月5日的疫情数据。
-```{r,message=FALSE,eval=FALSE}
-setwd("D:/aaa")
-x<-readOGR("shenzhenDistrict.shp")
-shen_map<-fortify(x)
-shen_nCov =read.csv("data_confirm.csv")
-city_name=read.csv("city_name.csv")
-shen_nCov$time=ymd(shen_nCov$time)
-sh_nCov=shen_nCov[shen_nCov$time=="2020-3-5",]
-```
-
-#### (3)使用cut函数对疫情数据分箱，增加分段列confirm，并保存为数据框totalconfirm。
-```{r,,message=FALSE,eval=FALSE}
-shen_nCov$time=ymd(shen_nCov$time)
-sh_nCov=shen_nCov["2020-3-5",]
-totalconfirm=data.frame(time=sh_nCov$time,id=sh_nCov$id,confirmnum=sh_nCov$confirm,
-                        confirm=cut(shen_nCov$confirm,breaks=c(1,10,20,50,80,100),
-                                    labels=c("=<10","10-19","20-49","50-79",">=80"),
-                                    order = TRUE,include.lowest = T,right = F))
-
-```
-
-#### (4)将疫情数据与地理数据合并。
-```{r,message=FALSE,eval=FALSE}
-df_sh<-merge.data.frame(shen_map,totalconfirm,by.shen_map="id",by.totalconfirm="id")
-```
-
-#### (5)绘制3月5日的疫情地图。
-```{r,message=FALSE,eval=FALSE}
-g=ggplot()+
-    geom_polygon(data=df_sh,aes(x=long,y=lat,group=group,
-                   fill=confirm),colour="black",size=0.25)+
-    geom_text(aes(x=jd,y=wd,label=city),data=city_name)+
-    labs(title="2019_nCoV 深圳市疫情地图",
-         subtitle="2020-3-5")+
-         scale_fill_manual(values = brewer.pal(5,"Reds"))
-print(g)
-```
-
-```{r,message=FALSE, echo=FALSE}
-knitr::include_graphics("D:/aaa/2020-3-5.png",dpi=NA)
-```
-
-----
-
-#### 1.2动态疫情地图绘制过程
-
-#### (1)加载所需程序包
-```{r,message=FALSE,eval=FALSE}
-library(jsonlite);library(rjson);library(RJSONIO)
-library(ggplot2);library(RColorBrewer);library(lubridate)
-library(plyr);library(dplyr);library(rgdal)
-```
-
-#### (2)读取数据
-```{r,message=FALSE,eval=FALSE}
-setwd("D:/aaa")
-x<-readOGR("shenzhenDistrict.shp")
-shen_map<-fortify(x)
-shen_nCov =read.csv("data_confirm.csv")
-city_name=read.csv("city_name.csv")
-```
-
-#### (3)对输出数据进行简单的处理,格式选择我们需要的累计确诊人数，并对列名进行更改,并使用cut函数对疫情数据分箱。
-```{r,message=FALSE,eval=FALSE}
-shen_nCov$time=ymd(shen_nCov$time)
-totalconfirm=data.frame(time=shen_nCov$time,id=shen_nCov$id,confirmnum=shen_nCov$confirm,
-                        confirm=cut(shen_nCov$confirm,breaks=c(1,10,20,50,80,100),
-                                    labels=c("=<10","10-19","20-49","50-79",">=80"),
-                                    order = TRUE,include.lowest = T,right = F))
-```
-
-#### (4)制作时间序列,根据疫情数据，创建时间序列，用于后续循环绘图。
-```{r,message=FALSE,eval=FALSE}
-startTime <- ymd("2020-1-30")
-endTime <- ymd("2020-3-5")
-timeLength <- interval(startTime, endTime) %>% time_length("day")
-mytime <- startTime + ddays(0:timeLength)
-```
-
-#### (5)循环绘图,按照时间序列循环绘制静态图片，保存为.gif格式的动图。
-```{r,message=FALSE,eval=FALSE}
-library(animation)
-saveGIF({
-  for (i in 1:length(mytime)) {
-    data_time=subset(totalconfirm,time==mytime[i])
-    df_shen<-merge.data.frame(shen_map,data_time,by.shen_map="id",by.data_time="id")
-    p=ggplot()+
-      geom_polygon(data=df_shen,aes(x=long,y=lat,group=group,
-                                    fill=confirm), colour="black",size=0.25)+
-      geom_text(aes(x=jd,y=wd,label=city),data=city_name)+
-      labs(title="2019_nCoV 深圳市疫情地图",
-           subtitle=mytime[i])+
-      scale_fill_manual(values = brewer.pal(5,"Reds"))
-  print(p)
- }
-},movie.name="深圳疫情可视化动态地图.gif",path = "D:/",width = 20, height = 20, units = "cm")
-
-```
-
-```{r,message=FALSE, echo=FALSE}
-knitr::include_graphics("D:/aaa/深圳疫情可视化动态地图.gif",dpi=NA)
-```
-
-通过观察深圳市动态疫情地图，我们可以发现在1月30日至2月8日之间，深圳市各行政区疫情患者日增速较快,自2月20日后，各区累计确诊数变动不大，增速明显放缓，说明疫情得到了有效控制。
-
-此外，从时间空间传播角度，还可以发现疫情有以南山区、福田区为中心随时间向周围行政区扩散的趋势，并且深圳市疫情呈现明显两极分化的趋势，西部各区为重灾区，而东部三区累计确诊病例数均停留在个位数上。
-
-结合深圳市各区经济发展等因素进行粗略分析，发现其疫情与各区人口密度，交通便利度、区位功能重要性、地理环境等密切相关，比如东部三区以山地为主，经济欠发达，而西部区域分别建有地铁线、高铁站、机场等大型交通枢纽，还包括数家世界500强企业,人口流量大，活动范围广，因此，疫情在东西部的传播范围呈现出显著差异。
-
-在初步分析的过程中，疫情地图可视化可以帮助我们拓展研究思路，挖掘更多隐藏信息，为深入分析疫情的时空传播模式和特征提供方向。
 
 # 1.5 参考文献
 
@@ -248,6 +125,131 @@ knitr::include_graphics("D:/aaa/深圳疫情可视化动态地图.gif",dpi=NA)
 ## 3.1 利用ggplot画深圳市各区确诊人数变化折线图
 
 
+# 4.可视化方法2
+
+## 4.1基于深圳市各区累计确诊病例的疫情地图
+
+这部分主要介绍如何使用R语言实现疫情地图的可视化。疫情地图的可视化可以更加直观地反映疫情在不同地区的分布情况以及严重程度，我们在静态疫情地图的基础上，进一步绘制出可以反映疫情在时间、空间两个维度上传播的动态地图动态疫情地图。
+
+### 4.1.1静态疫情地图绘制过程
+
+&emsp;1、加载所需程序包
+```{r,message=FALSE,eval=FALSE}
+library(jsonlite);library(rjson);library(RJSONIO)
+library(ggplot2);library(RColorBrewer);library(lubridate)
+library(plyr);library(dplyr);library(rgdal)
+```
+
+&emsp;2、读取数据，并挑选出3月5日的疫情数据
+```{r,message=FALSE,eval=FALSE}
+setwd("D:/aaa")
+x<-readOGR("shenzhenDistrict.shp")
+shen_map<-fortify(x)
+shen_nCov =read.csv("data_confirm.csv")
+city_name=read.csv("city_name.csv")
+shen_nCov$time=ymd(shen_nCov$time)
+sh_nCov=shen_nCov[shen_nCov$time=="2020-3-5",]
+```
+&emsp;3、使用cut函数对疫情数据分箱，增加分段列confirm，并保存为数据框totalconfirm。
+```{r,,message=FALSE,eval=FALSE}
+shen_nCov$time=ymd(shen_nCov$time)
+sh_nCov=shen_nCov["2020-3-5",]
+totalconfirm=data.frame(time=sh_nCov$time,id=sh_nCov$id,confirmnum=sh_nCov$confirm,
+                        confirm=cut(shen_nCov$confirm,breaks=c(1,10,20,50,80,100),
+                                    labels=c("=<10","10-19","20-49","50-79",">=80"),
+                                    order = TRUE,include.lowest = T,right = F))
+
+
+```
+&emsp;4、将疫情数据与地理数据合并
+```{r,message=FALSE,eval=FALSE}
+df_sh<-merge.data.frame(shen_map,totalconfirm,by.shen_map="id",by.totalconfirm="id")
+```
+
+&emsp;5、绘制3月5日的疫情地图
+```{r,message=FALSE,eval=FALSE}
+g=ggplot()+
+    geom_polygon(data=df_sh,aes(x=long,y=lat,group=group,
+                   fill=confirm),colour="black",size=0.25)+
+    geom_text(aes(x=jd,y=wd,label=city),data=city_name)+
+    labs(title="2019_nCoV 深圳市疫情地图",
+         subtitle="2020-3-5")+
+         scale_fill_manual(values = brewer.pal(5,"Reds"))
+print(g)
+```
+
+```{r,message=FALSE, echo=FALSE}
+knitr::include_graphics("D:/aaa/2020-3-5.png",dpi=NA)
+```
+
+----
+
+### 4.1.2动态疫情地图绘制过程
+
+&emsp;1、加载所需程序包
+```{r,message=FALSE,eval=FALSE}
+library(jsonlite);library(rjson);library(RJSONIO)
+library(ggplot2);library(RColorBrewer);library(lubridate)
+library(plyr);library(dplyr);library(rgdal)
+```
+
+&emsp;2、读取数据
+```{r,message=FALSE,eval=FALSE}
+setwd("D:/aaa")
+x<-readOGR("shenzhenDistrict.shp")
+shen_map<-fortify(x)
+shen_nCov =read.csv("data_confirm.csv")
+city_name=read.csv("city_name.csv")
+```
+
+&emsp;3、对输出数据进行简单的处理,格式选择我们需要的累计确诊人数，并对列名进行更改,并使用cut函数对疫情数据分箱。
+```{r,message=FALSE,eval=FALSE}
+shen_nCov$time=ymd(shen_nCov$time)
+totalconfirm=data.frame(time=shen_nCov$time,id=shen_nCov$id,confirmnum=shen_nCov$confirm,
+                        confirm=cut(shen_nCov$confirm,breaks=c(1,10,20,50,80,100),
+                                    labels=c("=<10","10-19","20-49","50-79",">=80"),
+                                    order = TRUE,include.lowest = T,right = F))
+```
+
+&emsp;4、制作时间序列,根据疫情数据，创建时间序列，用于后续循环绘图。
+```{r,message=FALSE,eval=FALSE}
+startTime <- ymd("2020-1-30")
+endTime <- ymd("2020-3-5")
+timeLength <- interval(startTime, endTime) %>% time_length("day")
+mytime <- startTime + ddays(0:timeLength)
+```
+
+&emsp;5、循环绘图,按照时间序列循环绘制静态图片，保存为.gif格式的动图。
+```{r,message=FALSE,eval=FALSE}
+library(animation)
+saveGIF({
+  for (i in 1:length(mytime)) {
+    data_time=subset(totalconfirm,time==mytime[i])
+    df_shen<-merge.data.frame(shen_map,data_time,by.shen_map="id",by.data_time="id")
+    p=ggplot()+
+      geom_polygon(data=df_shen,aes(x=long,y=lat,group=group,
+                                    fill=confirm), colour="black",size=0.25)+
+      geom_text(aes(x=jd,y=wd,label=city),data=city_name)+
+      labs(title="2019_nCoV 深圳市疫情地图",
+           subtitle=mytime[i])+
+      scale_fill_manual(values = brewer.pal(5,"Reds"))
+  print(p)
+ }
+},movie.name="深圳疫情可视化动态地图.gif",path = "D:/",width = 20, height = 20, units = "cm")
+
+```
+
+```{r,message=FALSE, echo=FALSE}
+knitr::include_graphics("D:/aaa/深圳疫情可视化动态地图.gif",dpi=NA)
+```
+
+通过观察深圳市动态疫情地图，我们可以发现在1月30日至2月8日之间，深圳市各行政区疫情患者日增速较快,自2月20日后，各区累计确诊数变动不大，增速明显放缓，说明疫情得到了有效控制。
+
+此外，从时间空间传播角度，还可以发现疫情有以南山区、福田区为中心随时间向周围行政区扩散的趋势，并且深圳市疫情呈现明显两极分化的趋势，西部各区为重灾区，而东部三区累计确诊病例数均停留在个位数上。
+
+结合深圳市各区经济发展等因素进行粗略分析，发现其疫情与各区人口密度，交通便利度、区位功能重要性、地理环境等密切相关，比如东部三区以山地为主，经济欠发达，而西部区域分别建有地铁线、高铁站、机场等大型交通枢纽，还包括数家世界500强企业,人口流量大，活动范围广，因此，疫情在东西部的传播范围呈现出显著差异。
+
+在初步分析的过程中，疫情地图可视化可以帮助我们拓展研究思路，挖掘更多隐藏信息，为深入分析疫情的时空传播模式和特征提供方向。
 
 
 
